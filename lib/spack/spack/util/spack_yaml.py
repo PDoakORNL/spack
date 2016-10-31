@@ -32,10 +32,7 @@
 
 """
 import yaml
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError as e:
-    from yaml import Loader, Dumper
+from yaml import Loader, Dumper
 from yaml.nodes import *
 from yaml.constructor import ConstructorError
 from ordereddict_backport import OrderedDict
