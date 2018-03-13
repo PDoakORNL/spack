@@ -38,12 +38,16 @@ class Magma(CMakePackage):
 
     variant('fortran', default=True,
             description='Enable Fortran bindings support')
+    variant('no_openmp', default=False,
+            description='Turn off openmp support')
 
+    depends_on('cmake')
     depends_on('lapack')
     depends_on('cuda@9.0:', when='%gcc@6.0:6.9.9')
     depends_on('cuda@8.0:', when='%gcc@5.0:')
     patch('ibm-xl.patch', when='@2.2:%xl')
     patch('ibm-xl.patch', when='@2.2:%xl_r')
+    patch('no_openmp.patch', when='@2.2:')
 
     def cmake_args(self):
         spec = self.spec
@@ -56,6 +60,11 @@ class Magma(CMakePackage):
                                           spec['lapack'].libs)
         ])
 
+        if '+no_openmp' in spec:
+            options.extend([
+                '-DNO_OPENMP=yes'
+            ])
+
         if '+fortran' in spec:
             options.extend([
                 '-DUSE_FORTRAN=yes'
@@ -67,7 +76,7 @@ class Magma(CMakePackage):
 
         if spec.satisfies('^cuda@9.0:'):
             options.extend([
-                '-DGPU_TARGET=sm30'
+                '-DGPU_TARGET=sm50'
             ])
 
         return options
