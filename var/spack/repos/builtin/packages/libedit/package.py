@@ -28,13 +28,26 @@ from spack import *
 class Libedit(AutotoolsPackage):
     """An autotools compatible port of the NetBSD editline library"""
     homepage = "http://thrysoee.dk/editline/"
-    url      = "http://thrysoee.dk/editline/libedit-20170329-3.1.tar.gz"
+    url      = "http://thrysoee.dk/editline/libedit-20180525-3.1.tar.gz"
 
+    version('3.1-20180525', '97679319742f45d6cdcd6075511b14ac')
     version('3.1-20170329', 'c57a0690e62ef523c083598730272cfd')
     version('3.1-20160903', '0467d27684c453a351fbcefebbcb16a3')
     version('3.1-20150325', '43cdb5df3061d78b5e9d59109871b4f6')
+    
+    #libedit calls tgetent which now resides in
+    #libtinfo provided by the termlib variant of ncurses
+    depends_on('ncurses+termlib')
 
-    depends_on('ncurses')
+    depends_on('m4')
+    depends_on('autoconf')
+    depends_on('automake')
+    depends_on('libtool')
+    
+    #additionally libedit does not check to see if tgetent is in libtinfo
+    #which is where it is in newer ncurses (or when you build termlib?)
+    patch('patch.configure', when='@3.1-20180525:')
+    force_autoreconf = True
 
     def url_for_version(self, version):
         url = "http://thrysoee.dk/editline/libedit-{0}-{1}.tar.gz"
