@@ -14,19 +14,24 @@ class GdkPixbuf(Package):
        preparation for the change to GTK+ 3."""
 
     homepage = "https://developer.gnome.org/gdk-pixbuf/"
-    url      = "https://ftp.acc.umu.se/pub/gnome/sources/gdk-pixbuf/2.38/gdk-pixbuf-2.38.0.tar.xz"
-    list_url = "https://ftp.acc.umu.se/pub/gnome/sources/gdk-pixbuf/"
-    list_depth = 1
+    git      = "https://gitlab.gnome.org/GNOME/gdk-pixbuf.git"
+    url      = "https://gitlab.gnome.org/GNOME/gdk-pixbuf/-/archive/2.38.1/gdk-pixbuf-2.38.1.tar.gz"
 
+    version('2.38.1', sha256='d9d4ee7a1b90fa28fca8f417b9eeef956479a5d1742b3cef837455ac3e58e116')
     version('2.38.0', sha256='dd50973c7757bcde15de6bcd3a6d462a445efd552604ae6435a0532fbbadae47')
     version('2.31.2', '6be6bbc4f356d4b79ab4226860ab8523')
 
+    depends_on('docbook-xsl')
+    depends_on('cmake@3.4.0:', type='build', when='@2.38.0:')
+    depends_on('meson@0.50.0:', type='build', when='@2.38.0:')
     depends_on('meson@0.46.0:', type='build', when='@2.37.92:')
     depends_on('meson@0.45.0:', type='build', when='@2.37.0:')
     depends_on('ninja', type='build', when='@2.37.0:')
     depends_on('shared-mime-info', type='build', when='@2.36.8: platform=linux')
     depends_on('shared-mime-info', type='build', when='@2.36.8: platform=cray')
     depends_on('pkgconfig', type='build')
+    depends_on('libx11', type='build')
+    depends_on('xdm', type='build')
     # Building the man pages requires libxslt and the Docbook stylesheets
     depends_on('libxslt', type='build')
     depends_on('docbook-xsl', type='build')
@@ -41,10 +46,6 @@ class GdkPixbuf(Package):
     # Replace the docbook stylesheet URL with the one that our
     # docbook-xsl package uses/recognizes.
     patch('docbook-cdn.patch')
-
-    def url_for_version(self, version):
-        url = "https://ftp.acc.umu.se/pub/gnome/sources/gdk-pixbuf/{0}/gdk-pixbuf-{1}.tar.xz"
-        return url.format(version.up_to(2), version)
 
     def setup_dependent_environment(self, spack_env, run_env, dependent_spec):
         spack_env.prepend_path("XDG_DATA_DIRS",
